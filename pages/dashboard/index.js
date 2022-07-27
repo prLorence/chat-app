@@ -8,6 +8,7 @@ import { useRouter } from 'next/router';
 import firebase from '../../firebase/index';
 
 // 3:11:50 in training video
+// test
 export default function Dashboard() {
   const router = useRouter();
   
