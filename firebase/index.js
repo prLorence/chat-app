@@ -29,7 +29,7 @@ const firebase = () => {
   };
 
   if (!getApps().length) {
-    return;
+    // return;
   }
   
   const app = initializeApp(clientCredentials);
@@ -55,7 +55,7 @@ const firebase = () => {
   }
 };
 
-export default firebase
+export default firebase;
 
 
 

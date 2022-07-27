@@ -3,10 +3,27 @@ import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 
 import React, { useEffect } from 'react';
-
-const {useRouter}
+import { useRouter } from 'next/router';
+import firebase from '../firebase/index';
 
 export default function Home() {
+
+  const router = useRouter();
+
+  useEffect(() => {
+    firebase().auth.onAuthStateChanged((user) => {
+      if (user) {
+        const uid = user.uid;
+        console.log(uid);
+        return;
+      }
+      
+      console.log("not a user");
+
+    });
+  }, [])
+
+
   return (
     <div className={styles.container}>
       <Head>
