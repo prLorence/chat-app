@@ -6,22 +6,73 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import firebase from '../firebase/index';
 
+import { TextField } from '@mui/material';
+
 export default function Home() {
   const router = useRouter();
-  const {isUser, setIsUser} = useState(false);
+  const [isUser, setIsUser] = useState(false);
+  const [fullName, setFullName] = useState("");
+  const [number, setNumber] = useState("");
+  const [currUID, setCurrUID] = useState("");
 
   useEffect(() => {
     firebase().auth.onAuthStateChanged((user) => {
       if (user) {
-        const uid = user.uid;
-        console.log(uid);
+        setCurrUID(user.uid);
         setIsUser(true);
+        console.log(user.uid);
       } else {
+
         console.log("not a user");
       }
     });
   }, [])
 
+  const uiDispatcher = () => {
+      if (isUser) {
+        return (
+          <> 
+              <TextField 
+                id = 't1'
+                label = 'full name'
+                variant = 'outlined'
+                onChange = {(e) => setFullName(e.target.value)}
+              /> 
+              
+
+              <TextField 
+                id = 't2'
+                label = 'number'
+                variant = 'outlined'
+                onChange = {(event) => {
+                    setNumber(event.target.value);
+                }}
+              /> 
+
+
+              <button 
+                style={{padding: 20}} 
+                title={isUser ? 'Logout' : 'Create Details'} 
+                onClick = {async () => {
+                  if (fullName !== "" && number !== "") {
+                    const {db, ref, set} = firebase();
+                    await set(ref(db, "users/" + currUID), {
+                      fullName : fullName,
+                      mobile: number,
+                      uid: currUID
+                    })
+                  } else {
+                    alert("fill up the form please!")
+                  }
+              }}>
+                <h1> Create Details </h1>
+              </button>
+          </>
+        )
+      }
+
+      return null;
+  };
 
   return (
     <div className={styles.container}>
@@ -33,16 +84,21 @@ export default function Home() {
 
       <main className={styles.main}>
 
-        <button style={{padding: 20}} title={isUser ? 'Logout' : 'Create User'} onClick = {() => {
+        <button 
+          style={{padding: 20}} 
+          title={isUser ? 'Logout' : 'Create Details'} 
+          onClick = {() => {
             if (isUser) {
                 firebase().auth.signOut();
+                setIsUser(false);
             } else {
-                router.push("/dashboard");
+              router.push("/dashboard");
             }
         }}>
-
           <h1> {isUser ? 'Logout' : 'Create User'} </h1>
         </button>
+
+        {uiDispatcher()}
 
         <h1 className={styles.title}>
           Welcome to <a href="https://nextjs.org">Next.js!</a>

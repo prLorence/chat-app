@@ -6,11 +6,16 @@ import styles from '../../styles/Home.module.css'
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import firebase from '../../firebase/index';
+import { TextField } from '@mui/material';
 
 // 3:11:50 in training video
 // test
 export default function Dashboard() {
   const router = useRouter();
+  const [email, setEmail]= useState("");
+  const [password, setPassword] = useState("");
+  
+  const uiDispatcher = () => {};
   
   return (
     <div className={styles.container}>
@@ -26,7 +31,33 @@ export default function Dashboard() {
           Welcome to User Screen
         </h1>
 
+        <TextField 
+          id = 't1'
+          label = 'email address'
+          variant = 'outlined'
+          onChange = {(e) => setEmail(e.target.value)}
+        /> 
         
+
+        <TextField 
+          id = 't2'
+          label = 'password'
+          variant = 'outlined'
+          onChange = {(event) => {
+              setPassword(event.target.value);
+          }}
+        /> 
+
+        <button style={{padding: 20}} onClick = {async () => {
+            const firebaseAuth = firebase().auth;
+            await firebase()
+                  .createUserWithEmailAndPassword(firebaseAuth, email, password)
+                  .catch((e) => console.log({e}));
+
+            router.push("/");
+        }}>
+            <h1>Create User</h1>
+        </button>
 
         <p className={styles.description}>
           Get started by editing{' '}

@@ -1,5 +1,5 @@
 import { getApps, initializeApp } from 'firebase/app';
-import { getAuth, EmailAuthProvider } from 'firebase/auth';
+import { getAuth, EmailAuthProvider, createUserWithEmailAndPassword } from 'firebase/auth';
 
 import {
   getDatabase,
@@ -51,7 +51,8 @@ const firebase = () => {
     equalTo,
     startAt,
     endAt,
-    child
+    child,
+    createUserWithEmailAndPassword
   }
 };
 
