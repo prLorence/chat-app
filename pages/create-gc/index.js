@@ -29,10 +29,7 @@ export default function Dashboard() {
       firebase().auth.onAuthStateChanged((user) => {
         if (user) {
           setCurrUID(user.uid);
-        } else {
-          console.log("not a user");
-        }
-      });
+        }});
     }, [])
 
   const fetchData = async () => {
@@ -44,15 +41,14 @@ export default function Dashboard() {
 
     const extractData = getVal.val();
 
-    const transformedData = Object.entries(extractData).map(a => ({
+    // return formatted extractData
+    return Object.entries(extractData).map(a => ({
         id : a[0],
         ...a[1],
-    }))
-
-    return transformedData;
+    }));
   }
 
-  const query = async (req, callback) => {
+  const querySearch = async (req, callback) => {
       const {db, ref, get, limitToLast, query, orderByChild, startAt, endAt} = firebase();
 
       const myRes = [];
@@ -78,7 +74,7 @@ export default function Dashboard() {
 
   const fetch = useMemo(() => throttle((req, callback) => {
       setLoading(true);
-      query(req, callback)
+      querySearch(req, callback)
   }, 500), []
   )
 
@@ -109,9 +105,9 @@ export default function Dashboard() {
       setLoading(false);
     });
 
-    () => {
+    (() => {
       active = false;
-    };
+    })();
 
   }, [searchValue, inputValue, fetch])
   
@@ -209,7 +205,7 @@ export default function Dashboard() {
             members[a.id] = true
           })
 
-          console.log({members});
+          console.log({ members });
 
           
           const id = `${moment().valueOf()}`
@@ -220,7 +216,7 @@ export default function Dashboard() {
             members: { ...members }
           }
 
-          console.log({constructValue});
+          console.log({ constructValue });
 
           await set(ref(db, 'gc/' + id), constructValue).catch(e => console.error(e));
 
