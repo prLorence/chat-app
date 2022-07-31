@@ -19,16 +19,18 @@ export default function Dashboard() {
   const [refresh, setRefresh] = useState(Math.random());
   const [message, setMessage] = useState("");
   const [currUID, setCurrUID] = useState(null);
-  const [user, setUser] = useState("")
+  const [currentUser, setCurrentUser] = useState("")
   const { query }= router;
 
   console.log({query});
 
-
   useEffect(() => {
+    const {auth} = firebase();
       firebase().auth.onAuthStateChanged((user) => {
+        const userInSession = auth.currentUser;
         if (user) {
           setCurrUID(user.uid);
+          userInSession.displayName = user.uid;
         }});
     }, [])
   
@@ -50,12 +52,13 @@ export default function Dashboard() {
   }
 
   const getUser = async (a) => {
-    const {db, ref, get, child} = firebase();
+    const {db, ref, get, child, auth} = firebase();
     const dbRef = ref(db);
     const getVal = await get(child(dbRef, "users/" + a))
-    const retrievedUser = getVal.val();
-
-    setUser(retrievedUser.fullName);
+    const userVal =getVal.val();
+    const retrievedUser = auth.currentUser;
+    console.log(retrievedUser)
+    setCurrentUser(retrievedUser.displayName);
   }
   
   useEffect(() => {
@@ -85,7 +88,7 @@ export default function Dashboard() {
               display: 'flex', 
               width: '50%', 
             }}>
-              <p> {`${user}: `}</p>
+              <p> {`${currentUser}: `}</p>
               <p> {`${a.message}`}</p>
             </div>
             ))

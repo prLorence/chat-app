@@ -2,15 +2,19 @@ import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 
-import React, { useEffect, useState } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import firebase from '../firebase/index';
 
 import { TextField } from '@mui/material';
+import { throttle } from 'lodash';
+import { push } from 'firebase/database';
 
 export default function Home() {
   const router = useRouter();
   const [isUser, setIsUser] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [number, setNumber] = useState("");
   const [currUID, setCurrUID] = useState("");
@@ -27,6 +31,24 @@ export default function Home() {
       }
     });
   }, [])
+
+  const logInUser = (userEmail, userPassword) => {
+    const { auth, signInWithEmailAndPassword } = firebase();
+    signInWithEmailAndPassword(auth, userEmail, userPassword).then((userCredential) => {
+        const user = userCredential.user;
+        console.log({user});
+        setIsUser(true);
+        setCurrUID(user.uid);
+    }).catch(e => console.error(e))
+
+    setFullName("")
+    setNumber("")
+  }
+
+  useEffect(() => {
+    logInUser(email, password)
+  }, [email, password ])
+
 
   const uiDispatcher = () => {
       if (isUser) {
@@ -67,11 +89,57 @@ export default function Home() {
               }}>
                 <h1> Create Details </h1>
               </button>
+
+              <button 
+                style={{padding: 20}} 
+                title={isUser ? 'Logout' : 'Create Details'} 
+                onClick = {async () => {
+                  router.push("/gcs")
+              }}>
+                <h1> Go to available gcs </h1>
+              </button>
           </>
         )
       }
 
-      return null;
+        return (
+            <> 
+                <TextField 
+                  id = 't1'
+                  label = 'email'
+                  variant = 'outlined'
+                  onChange = {e => {
+                      setEmail(e.target.value);
+                    }
+                    
+                  }
+                /> 
+                
+  
+                <TextField 
+                  id = 't2'
+                  label = 'password'
+                  variant = 'outlined'
+                  onChange = {e => {
+                      setPassword(e.target.value);
+                  }}
+                /> 
+  
+  
+                <button 
+                  style={{padding: 20}} 
+                  title={isUser ? 'Logout' : 'Log In'} 
+                  onClick = {async () => {
+                    if (fullName !== "" && number !== "") {
+                        logInUser(email, password)
+                      }
+                    }}>
+
+                  <h1> {isUser ? 'Logout' : 'Log In'} </h1>
+
+                </button>
+            </>
+        );
   };
 
   return (
@@ -83,6 +151,9 @@ export default function Home() {
       </Head>
 
       <main className={styles.main}>
+
+
+        {uiDispatcher()}
 
         <button 
           style={{padding: 20}} 
@@ -98,60 +169,7 @@ export default function Home() {
           <h1> {isUser ? 'Logout' : 'Create User'} </h1>
         </button>
 
-        {uiDispatcher()}
-
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h2>Documentation &rarr;</h2>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h2>Learn &rarr;</h2>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/canary/examples"
-            className={styles.card}
-          >
-            <h2>Examples &rarr;</h2>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h2>Deploy &rarr;</h2>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
       </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <span className={styles.logo}>
-            <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-          </span>
-        </a>
-      </footer>
     </div>
   )
 }
