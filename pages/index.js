@@ -49,6 +49,13 @@ export default function Home() {
     logInUser(email, password)
   }, [email, password ])
 
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
+  }
+
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value);
+  }
 
   const uiDispatcher = () => {
       if (isUser) {
@@ -107,22 +114,19 @@ export default function Home() {
                 <TextField 
                   id = 't1'
                   label = 'email'
+                  value={email}
                   variant = 'outlined'
-                  onChange = {e => {
-                      setEmail(e.target.value);
-                    }
+                  onChange = {handleEmailChange} 
                     
-                  }
                 /> 
                 
   
                 <TextField 
                   id = 't2'
                   label = 'password'
+                  value = {password}
                   variant = 'outlined'
-                  onChange = {e => {
-                      setPassword(e.target.value);
-                  }}
+                  onChange = {handlePasswordChange}
                 /> 
   
   

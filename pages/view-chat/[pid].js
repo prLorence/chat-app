@@ -20,6 +20,7 @@ export default function Dashboard() {
   const [message, setMessage] = useState("");
   const [currUID, setCurrUID] = useState(null);
   const [currentUser, setCurrentUser] = useState("")
+  const [user, setUser] = useState({})
   const { query }= router;
 
   console.log({query});
@@ -55,9 +56,11 @@ export default function Dashboard() {
     const {db, ref, get, child, auth} = firebase();
     const dbRef = ref(db);
     const getVal = await get(child(dbRef, "users/" + a))
-    const userVal =getVal.val();
+    const userVal = getVal.val();
     const retrievedUser = auth.currentUser;
-    console.log(retrievedUser)
+    console.log("metadata", retrievedUser.metadata)
+    console.log("retrievedUser", retrievedUser)
+    setUser(userVal);
     setCurrentUser(retrievedUser.displayName);
   }
   
@@ -88,7 +91,7 @@ export default function Dashboard() {
               display: 'flex', 
               width: '50%', 
             }}>
-              <p> {`${currentUser}: `}</p>
+              <p > {`${a.senderName}: `}</p>
               <p> {`${a.message}`}</p>
             </div>
             ))
@@ -116,6 +119,7 @@ export default function Dashboard() {
 
               await set(ref(db, `messages/${query.id}/${msgId}`),
               {
+                senderName: user.fullName,
                 senderId: currUID,
                 message: message,
               })

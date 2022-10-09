@@ -7,13 +7,36 @@ import { useRouter } from 'next/router';
 import firebase from '../../firebase/index';
 import { TextField } from '@mui/material';
 
+
+
 // 3:11:50 in training video
 // test
 export default function Dashboard() {
   const router = useRouter();
   const [email, setEmail]= useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value)
+  }
+
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value)
+  }
+
+  const createUser = async () => {
+    const firebaseAuth = firebase().auth;
+    await firebase()
+          .createUserWithEmailAndPassword(firebaseAuth, email, password)
+          .catch((e) => {
+            console.log({e}) 
+            setError(e.code)
+          });
+
+    router.push("/");
+  }
+
   return (
     <div className={styles.container}>
       <Head>
@@ -32,27 +55,25 @@ export default function Dashboard() {
           id = 't1'
           label = 'email address'
           variant = 'outlined'
-          onChange = {(e) => setEmail(e.target.value)}
+          value={email}
+          onChange = {handleEmailChange}
         /> 
         
 
         <TextField 
           id = 't2'
           label = 'password'
+          value={password}
           variant = 'outlined'
-          onChange = {(event) => {
-              setPassword(event.target.value);
-          }}
+          onChange = {handlePasswordChange}
         /> 
 
-        <button style={{padding: 20}} onClick = {async () => {
-            const firebaseAuth = firebase().auth;
-            await firebase()
-                  .createUserWithEmailAndPassword(firebaseAuth, email, password)
-                  .catch((e) => console.log({e}));
+        <p> {error ? error : ""} </p>
 
-            router.push("/");
-        }}>
+
+
+
+        <button style={{padding: 20}} onClick = {createUser}>
             <h1>Create User</h1>
         </button>
 
