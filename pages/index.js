@@ -24,7 +24,6 @@ const Home = () => {
       if (user) {
         setCurrUID(user.uid);
         setIsUser(true);
-        console.log(user.uid);
       } else {
         console.log('not a user');
       }

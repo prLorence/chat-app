@@ -14,8 +14,6 @@ const sendGcMessage = async (gcTitle, gcCreator, searchValue) => {
     members[a.id] = true;
   });
 
-  console.log({members});
-
   const id = `${moment().valueOf()}`;
 
   const constructValue = {
@@ -24,8 +22,6 @@ const sendGcMessage = async (gcTitle, gcCreator, searchValue) => {
     creator: gcCreator,
     members: {...members},
   };
-
-  console.log({constructValue});
 
   await set(ref(db, 'gc/' + id), constructValue).catch(e => console.error(e));
 

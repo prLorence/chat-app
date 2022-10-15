@@ -57,8 +57,6 @@ export default function Dashboard() {
     const getVal = await get(child(dbRef, 'users/' + a));
     const userVal = getVal.val();
     const retrievedUser = auth.currentUser;
-    console.log('metadata', retrievedUser.metadata);
-    console.log('retrievedUser', retrievedUser);
     setUser(userVal);
     setCurrentUser(retrievedUser.displayName);
   };

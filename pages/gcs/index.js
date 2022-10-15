@@ -88,7 +88,6 @@ export default function Dashboard() {
             rowsPerPageOptions={[20]}
             hideFooter
             onCellClick={(event, details) => {
-              console.log({event, details});
               handleClicks(event.row);
             }}
           />
