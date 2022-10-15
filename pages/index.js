@@ -5,18 +5,19 @@ import styles from '../styles/Home.module.css'
 import React, { useMemo, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import firebase from '../firebase/index';
+import {componentStyles} from '../styles/jsStyles'
 
 import { TextField } from '@mui/material';
 import { throttle } from 'lodash';
 import { push } from 'firebase/database';
+import { Button } from '@mui/material'
+import UiDispatcher from '../components/LogIn'
+import { HomeMax } from '@mui/icons-material';
 
-export default function Home() {
+
+const Home = () => {
   const router = useRouter();
   const [isUser, setIsUser] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [fullName, setFullName] = useState("");
-  const [number, setNumber] = useState("");
   const [currUID, setCurrUID] = useState("");
 
   useEffect(() => {
@@ -32,120 +33,6 @@ export default function Home() {
     });
   }, [])
 
-  const logInUser = (userEmail, userPassword) => {
-    const { auth, signInWithEmailAndPassword } = firebase();
-    signInWithEmailAndPassword(auth, userEmail, userPassword).then((userCredential) => {
-        const user = userCredential.user;
-        console.log({user});
-        setIsUser(true);
-        setCurrUID(user.uid);
-    }).catch(e => console.error(e))
-
-    setFullName("")
-    setNumber("")
-  }
-
-  useEffect(() => {
-    logInUser(email, password)
-  }, [email, password ])
-
-  const handleEmailChange = (e) => {
-    setEmail(e.target.value);
-  }
-
-  const handlePasswordChange = (e) => {
-    setPassword(e.target.value);
-  }
-
-  const uiDispatcher = () => {
-      if (isUser) {
-        return (
-          <> 
-              <TextField 
-                id = 't1'
-                label = 'full name'
-                variant = 'outlined'
-                onChange = {(e) => setFullName(e.target.value)}
-              /> 
-              
-
-              <TextField 
-                id = 't2'
-                label = 'number'
-                variant = 'outlined'
-                onChange = {(event) => {
-                    setNumber(event.target.value);
-                }}
-              /> 
-
-
-              <button 
-                style={{padding: 20}} 
-                title={isUser ? 'Logout' : 'Create Details'} 
-                onClick = {async () => {
-                  if (fullName !== "" && number !== "") {
-                    const {db, ref, set} = firebase();
-                    await set(ref(db, "users/" + currUID), {
-                      fullName : fullName,
-                      mobile: number,
-                      uid: currUID
-                    })
-                  } else {
-                    alert("fill up the form please!")
-                  }
-              }}>
-                <h1> Create Details </h1>
-              </button>
-
-              <button 
-                style={{padding: 20}} 
-                title={isUser ? 'Logout' : 'Create Details'} 
-                onClick = {async () => {
-                  router.push("/gcs")
-              }}>
-                <h1> Go to available gcs </h1>
-              </button>
-          </>
-        )
-      }
-
-        return (
-            <> 
-                <TextField 
-                  id = 't1'
-                  label = 'email'
-                  value={email}
-                  variant = 'outlined'
-                  onChange = {handleEmailChange} 
-                    
-                /> 
-                
-  
-                <TextField 
-                  id = 't2'
-                  label = 'password'
-                  value = {password}
-                  variant = 'outlined'
-                  onChange = {handlePasswordChange}
-                /> 
-  
-  
-                <button 
-                  style={{padding: 20}} 
-                  title={isUser ? 'Logout' : 'Log In'} 
-                  onClick = {async () => {
-                    if (fullName !== "" && number !== "") {
-                        logInUser(email, password)
-                      }
-                    }}>
-
-                  <h1> {isUser ? 'Logout' : 'Log In'} </h1>
-
-                </button>
-            </>
-        );
-  };
-
   return (
     <div className={styles.container}>
       <Head>
@@ -157,11 +44,14 @@ export default function Home() {
       <main className={styles.main}>
 
 
-        {uiDispatcher()}
+        { isUser ? ' ' : <UiDispatcher isUser={isUser}/>}
 
-        <button 
-          style={{padding: 20}} 
-          title={isUser ? 'Logout' : 'Create Details'} 
+        {
+          isUser ? 
+          <Button 
+          style={componentStyles.primaryButton} 
+          variant="contained"
+          title={'Logout'} 
           onClick = {() => {
             if (isUser) {
                 firebase().auth.signOut();
@@ -170,10 +60,30 @@ export default function Home() {
               router.push("/dashboard");
             }
         }}>
-          <h1> {isUser ? 'Logout' : 'Create User'} </h1>
-        </button>
+          <h1> Logout  </h1>
+        </Button>
+        :
+        ''
+        }
+
+        {
+          isUser ? 
+          <Button 
+          style={componentStyles.primaryButton} 
+          variant="contained"
+          title={'Create Details'} 
+          onClick = {() => {
+              router.push("/dashboard");
+        }}>
+          <h1> {'Create Your Details'} </h1>
+        </Button>
+        :
+        ''
+        }
 
       </main>
     </div>
   )
 }
+
+export default Home;

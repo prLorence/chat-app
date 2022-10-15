@@ -25,12 +25,12 @@ export default function Dashboard() {
     setEmail(e.target.value);
   }
 
-  const signInUser = async () => {
+  const signUpUser = async () => {
     const firebaseAuth = firebase().auth;
     await firebase()
           .createUserWithEmailAndPassword(firebaseAuth, email, password)
           .catch((e) => console.log({e}));
-    router.push("/");
+    router.push("/dashboard");
   }
   
   return (
@@ -43,9 +43,7 @@ export default function Dashboard() {
 
       <main className={styles.main}>
 
-        <h1 className={styles.title}>
-          Welcome to User Screen
-        </h1>
+        <h1 className={styles.title}> Sign Up </h1>
 
         <TextField 
           id = 't1'
@@ -64,7 +62,7 @@ export default function Dashboard() {
           onChange = {handlePasswordChange}
         /> 
 
-        <button style={{padding: 20}} onClick = {signInUser}>
+        <button style={{padding: 20}} onClick = {signUpUser}>
             <h1>Create User</h1>
         </button>
       </main>

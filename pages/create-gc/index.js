@@ -21,6 +21,7 @@ export default function Dashboard() {
   const [searchValue, setSearchValue] = useState();
   const [loading, setLoading] = useState(false);
   const [gcTitle, setGcTitle] = useState("");
+  const [gcCreator, setGcCreator] = useState("");
   const [gcMessage, setGcMessage] = useState("");
   const [inputValue, setInputValue] = useState("");
   const [currUID, setCurrUID] = useState(null);
@@ -42,10 +43,13 @@ export default function Dashboard() {
     const extractData = getVal.val();
 
     // return formatted extractData
-    return Object.entries(extractData).map(a => ({
+    const dataMap = Object.entries(extractData).map(a => ({
         id : a[0],
         ...a[1],
     }));
+
+    setGcCreator(dataMap[0].fullName)
+    return dataMap;
   }
 
   const querySearch = async (req, callback) => {
@@ -121,8 +125,8 @@ export default function Dashboard() {
 
       <main className={styles.main}>
 
-        <h1 className={styles.title}>
-          Welcome to Create Group Chat Screen
+        <h1 className={styles.description}>
+          Create a group chat
         </h1>
 
         <TextField
@@ -213,6 +217,7 @@ export default function Dashboard() {
           const constructValue = {
             gcTitle: gcTitle,
             id: id,
+            creator: gcCreator,
             members: { ...members }
           }
 
@@ -223,8 +228,9 @@ export default function Dashboard() {
           const messageId = `msg-${id}`
 
           await set(ref(db, `messages/${id}/${messageId}`), {
+              creator: gcCreator,
               senderId: currUID,
-              message: gcMessage
+              message: gcMessage,
           }).catch(e => console.error(e))
 
           await update(ref(db, 'gc/' + id), {

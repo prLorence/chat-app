@@ -48,18 +48,12 @@ export default function Dashboard() {
     }, [])
   
   const getData = async () => {
-    const {db, ref, get, child, query, orderByChild, equalTo, limitToLast} = firebase();
+    const {db, ref, get, child} = firebase();
 
     const dbRef = ref(db);
     
     const getVal = await get(child(dbRef, "gc"));
-    // const getVal2 = await get(
-    //   query(dbRef, "gc"), 
-    //   ...[orderByChild(dbRef, `members/${currUID}`), 
-    //   equalTo(true),
-    //   limitToLast(50)]
-    //   );
-    
+
     const extractVal = getVal.val();
     
     const formattedData = Object.entries(extractVal).map(a => ({
@@ -84,8 +78,8 @@ export default function Dashboard() {
 
       <main className={styles.main}>
 
-        <h1 className={styles.title}>
-          Welcome to Create Group Chat Screen
+        <h1 className={styles.description}>
+          Available group chats for you
         </h1>
 
         <div style={{ height: 340, width: '100%', marginTop: 20}}>

@@ -23,7 +23,7 @@ export default function Dashboard() {
   const [user, setUser] = useState({})
   const { query }= router;
 
-  console.log({query});
+  // console.log({query});
 
   useEffect(() => {
     const {auth} = firebase();
@@ -71,6 +71,10 @@ export default function Dashboard() {
     };
   }, [currUID, refresh])
 
+  const handleMessageChange = (e) => {
+    setMessage(e.target.value);
+  }
+
   return (
     <div className={styles.container}>
       <Head>
@@ -80,19 +84,25 @@ export default function Dashboard() {
       </Head>
 
       <main className={styles.main}>
-
-        <h1 className={styles.title}>
-          Welcome to Create Group Chat Screen {query.gcTitle}
+        <h1 className={styles.title}> {query.gcTitle} </h1>
+        <h1 className={styles.description}>
+          created by: {query.creator}
         </h1>
 
         {
           data.map((a) => (
+            // eslint-disable-next-line react/jsx-key
             <div style = {{
               display: 'flex', 
               width: '50%', 
             }}>
-              <p > {`${a.senderName}: `}</p>
-              <p> {`${a.message}`}</p>
+              <p key={refresh}> 
+                {
+                  a.senderName ? 
+                  `${a.senderName}: ${a.message}` 
+                  : `${a.creator}: ${a.message}`
+                }
+              </p>
             </div>
             ))
         }
@@ -104,9 +114,7 @@ export default function Dashboard() {
           label = "send message"
           variant = "outlined"
           value = {message}
-          onChange = {(e) => {
-            setMessage(e.target.value);
-          }}
+          onChange = {handleMessageChange}
         />
         
         <button style={{padding: 20}} 
