@@ -1,37 +1,35 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import styles from '../styles/Home.module.css'
+import Head from 'next/head';
+import Image from 'next/image';
+import styles from '../styles/Home.module.css';
 
-import React, { useMemo, useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
+import React, {useMemo, useEffect, useState} from 'react';
+import {useRouter} from 'next/router';
 import firebase from '../firebase/index';
-import {componentStyles} from '../styles/jsStyles'
+import {componentStyles} from '../styles/jsStyles';
 
-import { TextField } from '@mui/material';
-import { throttle } from 'lodash';
-import { push } from 'firebase/database';
-import { Button } from '@mui/material'
-import UiDispatcher from '../components/LogIn'
-import { HomeMax } from '@mui/icons-material';
-
+import {TextField} from '@mui/material';
+import {throttle} from 'lodash';
+import {push} from 'firebase/database';
+import {Button} from '@mui/material';
+import UiDispatcher from '../components/LogIn';
+import {HomeMax} from '@mui/icons-material';
 
 const Home = () => {
   const router = useRouter();
   const [isUser, setIsUser] = useState(false);
-  const [currUID, setCurrUID] = useState("");
+  const [currUID, setCurrUID] = useState('');
 
   useEffect(() => {
-    firebase().auth.onAuthStateChanged((user) => {
+    firebase().auth.onAuthStateChanged(user => {
       if (user) {
         setCurrUID(user.uid);
         setIsUser(true);
         console.log(user.uid);
       } else {
-
-        console.log("not a user");
+        console.log('not a user');
       }
     });
-  }, [])
+  }, []);
 
   return (
     <div className={styles.container}>
@@ -42,48 +40,43 @@ const Home = () => {
       </Head>
 
       <main className={styles.main}>
+        {isUser ? ' ' : <UiDispatcher isUser={isUser} />}
 
+        {isUser ? (
+          <Button
+            style={componentStyles.primaryButton}
+            variant="contained"
+            title={'Create Details'}
+            onClick={() => {
+              router.push('/dashboard');
+            }}>
+            <h1> Dashboard </h1>
+          </Button>
+        ) : (
+          ''
+        )}
 
-        { isUser ? ' ' : <UiDispatcher isUser={isUser}/>}
-
-        {
-          isUser ? 
-          <Button 
-          style={componentStyles.primaryButton} 
-          variant="contained"
-          title={'Logout'} 
-          onClick = {() => {
-            if (isUser) {
+        {isUser ? (
+          <Button
+            style={componentStyles.primaryButton}
+            variant="contained"
+            title={'Logout'}
+            onClick={() => {
+              if (isUser) {
                 firebase().auth.signOut();
                 setIsUser(false);
-            } else {
-              router.push("/dashboard");
-            }
-        }}>
-          <h1> Logout  </h1>
-        </Button>
-        :
-        ''
-        }
-
-        {
-          isUser ? 
-          <Button 
-          style={componentStyles.primaryButton} 
-          variant="contained"
-          title={'Create Details'} 
-          onClick = {() => {
-              router.push("/dashboard");
-        }}>
-          <h1> {'Create Your Details'} </h1>
-        </Button>
-        :
-        ''
-        }
-
+              } else {
+                router.push('/dashboard');
+              }
+            }}>
+            <h1> Logout </h1>
+          </Button>
+        ) : (
+          ''
+        )}
       </main>
     </div>
-  )
-}
+  );
+};
 
 export default Home;

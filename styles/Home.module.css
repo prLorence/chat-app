@@ -116,6 +116,14 @@
   margin-left: 0.5rem;
 }
 
+.primaryButton {
+  padding: 10;
+  font-size: 1.25rem;
+  background-color: '#f0f0f0';
+  color: '#000000';
+  margin-bottom: 10px;
+}
+
 @media (max-width: 600px) {
   .grid {
     width: 100%;

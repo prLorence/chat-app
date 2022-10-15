@@ -1,38 +1,45 @@
+import Head from 'next/head';
+import Image from 'next/image';
+import styles from '../../styles/Home.module.css';
 
-import Head from 'next/head'
-import Image from 'next/image'
-import styles from '../../styles/Home.module.css'
-
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
+import React, {useEffect, useState} from 'react';
+import {useRouter} from 'next/router';
 import firebase from '../../firebase/index';
-import { TextField } from '@mui/material';
-
-
+import {TextField, Button} from '@mui/material';
+import {componentStyles} from '../../styles/jsStyles';
 
 // 3:11:50 in training video
 // test
 export default function Dashboard() {
   const router = useRouter();
-  const [email, setEmail]= useState("");
-  const [password, setPassword] = useState("");
-  
-  const handlePasswordChange = (e) => {
-    setPassword(e.target.value);
-  }
+  const [error, setError] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-  const handleEmailChange = (e) => {
+  const handlePasswordChange = e => {
+    setPassword(e.target.value);
+  };
+
+  const handleEmailChange = e => {
     setEmail(e.target.value);
-  }
+  };
 
   const signUpUser = async () => {
     const firebaseAuth = firebase().auth;
     await firebase()
-          .createUserWithEmailAndPassword(firebaseAuth, email, password)
-          .catch((e) => console.log({e}));
-    router.push("/dashboard");
-  }
-  
+      .createUserWithEmailAndPassword(firebaseAuth, email, password)
+      .catch(e =>
+        e.code === 'auth/invalid-email'
+          ? setError('Invalid Email, Please try again.')
+          : setError(''),
+      )
+      .catch(e => console.error(e));
+
+    if (email !== '' && password !== '') {
+      router.push('/dashboard');
+    }
+  };
+
   return (
     <div className={styles.container}>
       <Head>
@@ -42,30 +49,33 @@ export default function Dashboard() {
       </Head>
 
       <main className={styles.main}>
+        <h1 className={styles.description}> Sign Up </h1>
 
-        <h1 className={styles.title}> Sign Up </h1>
-
-        <TextField 
-          id = 't1'
+        <TextField
+          id="t1"
           value={email}
-          label = 'email address'
-          variant = 'outlined'
-          onChange = {handleEmailChange}
-        /> 
-        
+          label="email address"
+          variant="outlined"
+          onChange={handleEmailChange}
+        />
 
-        <TextField 
-          id = 't2'
+        <TextField
+          id="t2"
           value={password}
-          label = 'password'
-          variant = 'outlined'
-          onChange = {handlePasswordChange}
-        /> 
+          label="password"
+          variant="outlined"
+          onChange={handlePasswordChange}
+        />
 
-        <button style={{padding: 20}} onClick = {signUpUser}>
-            <h1>Create User</h1>
-        </button>
+        <Button
+          variant="contained"
+          style={componentStyles.primaryButton}
+          onClick={signUpUser}>
+          <h1>Create User</h1>
+        </Button>
+
+        <p> {error} </p>
       </main>
     </div>
-  )
+  );
 }
